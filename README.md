@@ -20,7 +20,7 @@ This repository contains the smart contracts of the variable finance on-chain PO
 
 ## Getting Started
 
-### Prerequisites
+### Prerequisite
 
 The repository is built using hardhat. So it is recommended to install hardhat globally through npm or yarn using the following commands. Also the development of these smart contracts are done in npm version 7.16.0 & NodeJs version 16.1.0
 
