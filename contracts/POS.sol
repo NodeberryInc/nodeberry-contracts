@@ -3,12 +3,14 @@
 pragma solidity ^0.8.4;
 
 import "./interface/IProcessPayments.sol";
+import "./interface/IMerchant.sol";
 import "./chainlink/IAggregatorV3.sol";
 import "./token/IERC20.sol";
 import "./utils/Context.sol";
 import "./utils/Ownable.sol";
 
-contract ProcessPayments is IProcessPayments, Ownable {
+contract POS is IProcessPayments, Ownable {
+    address public merchantOracle;
     /**
      * Mapping of bytes string representing token ticker to an oracle address.
      */
@@ -46,10 +48,20 @@ contract ProcessPayments is IProcessPayments, Ownable {
         _;
     }
 
+    event Payment(
+        address indexed from,
+        address indexed merchant,
+        uint256 amount,
+        string token,
+        string notes
+    );
+
     /**
      * @dev sets the owners in the Ownable Contract.
      */
-    constructor() Ownable() {}
+    constructor(address _merchantOracle) Ownable() {
+        merchantOracle = _merchantOracle;
+    }
 
     /**
      * @dev sets the address of the oracle for the token ticker.
@@ -190,6 +202,28 @@ contract ProcessPayments is IProcessPayments, Ownable {
     }
 
     /**
+     * @dev processes all payments inside smart contracts.
+     *
+     * Requirements:
+     * `_ticker` is the name of token to be processed.
+     * `_usd` is the USD amount in 8-decimal.
+     */
+    function payment(
+        string memory _pointer,
+        string memory _ticker,
+        string memory _notes,
+        uint256 _usd
+    ) public virtual returns (bool, uint256) {
+        address merchant = IMerchant(merchantOracle).pointerAddress(_pointer);
+        require(merchant != address(0), "PoS Error: Invalid Merchant Address");
+        if (_isStable[bytes(_ticker)] == 1) {
+            return sPayment(merchant, _ticker, _usd, _notes);
+        } else {
+            return tPayment(merchant, _ticker, _usd, _notes);
+        }
+    }
+
+    /**
      * @dev process payments for stablecoins.
      *
      * Requirements:
@@ -198,7 +232,12 @@ contract ProcessPayments is IProcessPayments, Ownable {
      *
      * 1 Stablecoin is considered as 1 USD.
      */
-    function sPayment(string memory _ticker, uint256 _usd)
+    function sPayment(
+        address _merchant,
+        string memory _ticker,
+        uint256 _usd,
+        string memory _notes
+    )
         internal
         virtual
         Available(_ticker)
@@ -211,20 +250,17 @@ contract ProcessPayments is IProcessPayments, Ownable {
             "PoS Error: insufficient allowance for spender"
         );
         address contractAddress = _contracts[bytes(_ticker)];
-        uint256 decimals = IBEP20(contractAddress).decimals();
+        uint256 decimals = IERC20(contractAddress).decimals();
 
         uint256 tokens;
         if (decimals > 8) {
             tokens = _usd * 10**(decimals - 8);
         } else {
-            tokens = _usd * 10**(8 - decimals);
+            tokens = _usd / 10**(8 - decimals);
         }
+        emit Payment(spender, _merchant, tokens, _ticker, _notes);
         return (
-            IBEP20(contractAddress).transferFrom(
-                spender,
-                address(this),
-                tokens
-            ),
+            IERC20(contractAddress).transferFrom(spender, _merchant, tokens),
             tokens
         );
     }
@@ -238,12 +274,12 @@ contract ProcessPayments is IProcessPayments, Ownable {
      *
      * Price of token is fetched from Chainlink.
      */
-    function tPayment(string memory _ticker, uint256 _usd)
-        internal
-        virtual
-        Available(_ticker)
-        returns (bool, uint256)
-    {
+    function tPayment(
+        address _merchant,
+        string memory _ticker,
+        uint256 _usd,
+        string memory _notes
+    ) internal virtual Available(_ticker) returns (bool, uint256) {
         uint256 amount = resolveAmount(_ticker, _usd);
         address user = _msgSender();
 
@@ -252,30 +288,11 @@ contract ProcessPayments is IProcessPayments, Ownable {
             "PoS Error: Insufficient Approval"
         );
         address contractAddress = _contracts[bytes(_ticker)];
+        emit Payment(user, _merchant, amount, _ticker, _notes);
         return (
-            IBEP20(contractAddress).transferFrom(user, address(this), amount),
+            IERC20(contractAddress).transferFrom(user, _merchant, amount),
             amount
         );
-    }
-
-    /**
-     * @dev used for settle a tokens from the contract
-     * to a user.
-     *
-     * Requirements:
-     * `_ticker` of the token.
-     * `_value` is the amount of tokens (decimals not handled)
-     * `_to` is the address of the user.
-     *
-     * @return bool representing the status of the transaction.
-     */
-    function settle(
-        string memory _ticker,
-        uint256 _value,
-        address _to
-    ) internal virtual Available(_ticker) returns (bool) {
-        address contractAddress = _contracts[bytes(_ticker)];
-        return IBEP20(contractAddress).transfer(_to, _value);
     }
 
     /**
@@ -288,12 +305,12 @@ contract ProcessPayments is IProcessPayments, Ownable {
      * @return the approval of any stablecoin in 18-decimal.
      */
     function fetchApproval(string memory _ticker, address _holder)
-        private
+        public
         view
         returns (uint256)
     {
         address contractAddress = _contracts[bytes(_ticker)];
-        return IBEP20(contractAddress).allowance(_holder, address(this));
+        return IERC20(contractAddress).allowance(_holder, address(this));
     }
 
     /**
@@ -304,7 +321,7 @@ contract ProcessPayments is IProcessPayments, Ownable {
      * `_usd` represents the value in USD.
      */
     function resolveAmount(string memory _ticker, uint256 _usd)
-        private
+        public
         view
         returns (uint256)
     {
@@ -312,7 +329,7 @@ contract ProcessPayments is IProcessPayments, Ownable {
         uint256 price = fetchOraclePrice(_ticker);
 
         address contractAddress = _contracts[bytes(_ticker)];
-        uint256 decimal = IBEP20(contractAddress).decimals();
+        uint256 decimal = IERC20(contractAddress).decimals();
 
         require(decimal <= 18, "PoS Error: asset class cannot be supported");
         uint256 decimalCorrection = 18 - decimal;
@@ -325,7 +342,7 @@ contract ProcessPayments is IProcessPayments, Ownable {
      * @dev returns the contract address.
      */
     function fetchContract(string memory _ticker)
-        private
+        public
         view
         returns (address)
     {

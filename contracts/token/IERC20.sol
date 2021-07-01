@@ -6,7 +6,7 @@ pragma solidity ^0.8.4;
  * Interface of ZNFT Shares ERC20 Token As in EIP
  */
 
-interface IBEP20 {
+interface IERC20 {
     /**
      * @dev returns the name of the token
      */
