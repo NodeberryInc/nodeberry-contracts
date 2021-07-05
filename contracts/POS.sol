@@ -244,25 +244,33 @@ contract POS is IProcessPayments, Ownable {
         Stablecoin(_ticker)
         returns (bool, uint256)
     {
+        uint256 tokens = sAmount(_ticker, _usd);
         address spender = _msgSender();
+        address contractAddress = _contracts[bytes(_ticker)];
         require(
-            fetchApproval(_ticker, spender) >= _usd,
+            fetchApproval(_ticker, spender) >= tokens,
             "PoS Error: insufficient allowance for spender"
         );
-        address contractAddress = _contracts[bytes(_ticker)];
-        uint256 decimals = IERC20(contractAddress).decimals();
-
-        uint256 tokens;
-        if (decimals > 8) {
-            tokens = _usd * 10**(decimals - 8);
-        } else {
-            tokens = _usd / 10**(8 - decimals);
-        }
         emit Payment(spender, _merchant, tokens, _ticker, _notes);
         return (
             IERC20(contractAddress).transferFrom(spender, _merchant, tokens),
             tokens
         );
+    }
+
+    function sAmount(string memory _ticker, uint256 _usd)
+        public
+        view
+        virtual
+        returns (uint256)
+    {
+        address contractAddress = _contracts[bytes(_ticker)];
+        uint256 decimals = IERC20(contractAddress).decimals();
+        if (decimals > 8) {
+            return _usd * 10**(decimals - 8);
+        } else {
+            return _usd / 10**(8 - decimals);
+        }
     }
 
     /**
@@ -280,7 +288,7 @@ contract POS is IProcessPayments, Ownable {
         uint256 _usd,
         string memory _notes
     ) internal virtual Available(_ticker) returns (bool, uint256) {
-        uint256 amount = resolveAmount(_ticker, _usd);
+        uint256 amount = tAmount(_ticker, _usd);
         address user = _msgSender();
 
         require(
@@ -320,7 +328,7 @@ contract POS is IProcessPayments, Ownable {
      * `_ticker` represents the token to be accepted for payments.
      * `_usd` represents the value in USD.
      */
-    function resolveAmount(string memory _ticker, uint256 _usd)
+    function tAmount(string memory _ticker, uint256 _usd)
         public
         view
         returns (uint256)
