@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: ISC
-
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.7;
 
 /**
  * SC for handling payments outside of the marketplace SC.
@@ -11,7 +10,7 @@ pragma solidity ^0.8.4;
  * All prices are handles as 8-decimal irrespective of oracle source.
  */
 
-interface IProcessPayments {
+interface IPaymentProcessor {
     /**
      * @dev sets the address of the oracle for the token ticker for the first time.
      *
@@ -71,28 +70,4 @@ interface IProcessPayments {
      * @return bool representing the status of the transaction.
      */
     function markAsStablecoin(string memory _ticker) external returns (bool);
-
-    // /**
-    //  * @dev process payments for stablecoins.
-    //  *
-    //  * Requirements:
-    //  * `_ticker` is the name of the token to be processed.
-    //  * `_usd` is the amount of USD to be processed in 8-decimals.
-    //  *
-    //  * @return bool representing the status of payment.
-    //  * uint256 representing the amount of tokens processed.
-    //  */
-    // function sPayment(string memory _ticker, uint256 _usd) external returns (bool, uint256);
-
-    // /**
-    //  * @dev process payments for ERC20 tokens.
-    //  *
-    //  * Requirements:
-    //  * `_ticker` is the name of the token to be processed.
-    //  * `_usd` is the amount of USD to be processed in 8-decimals.
-    //  *
-    //  * @return bool representing the status of payment.
-    //  * uint256 representing the amount of tokens processed.
-    //  */
-    // function tPayment(string memory _ticker, uint256 _usd) external returns (bool, uint256);
 }

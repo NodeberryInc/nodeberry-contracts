@@ -1,13 +1,13 @@
-# Variable Finance Smart Contracts
+# Nodeberry Contracts
 
-This repository contains the smart contracts of the variable finance on-chain POS eco-system. It forms the basis of creating merchant accounts, processing payments & real-time settlements.
+Under Development. Document to be updated soon.
 
-### Table of contents
+<!-- ### Table of contents
 
 - [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Project structure](#project-structure)
+- [Project structure](#project-structure) -->
 
 ### Built with
 
@@ -18,7 +18,7 @@ This repository contains the smart contracts of the variable finance on-chain PO
 
 ---
 
-## Getting Started
+<!-- ## Getting Started
 
 ### Prerequisites
 
@@ -64,4 +64,4 @@ Step by step instructions on setting up the project and running it
 
    > Change these to the deployed contract arguments to successfully verify your contract in explorers. These arguments are the ones that we used in the constructor of the smart contract during their deployment. For verification purpose, we store it here.
 
-All configuration is done in hardhat.config.js & linting configurations are made in .solhint.json & .prettierrc
+All configuration is done in hardhat.config.js & linting configurations are made in .solhint.json & .prettierrc -->

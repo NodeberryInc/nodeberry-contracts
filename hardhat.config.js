@@ -4,10 +4,12 @@
  require("@nomiclabs/hardhat-ethers");
  require("@nomiclabs/hardhat-truffle5");
  require("@nomiclabs/hardhat-etherscan");
+ require("@nomiclabs/hardhat-waffle");  
+ require("solidity-coverage");
  require('dotenv').config();
 
  module.exports = {
-   solidity: "0.8.4",
+   solidity: "0.8.7",
    networks: {
      kovan: {
        url: `https://kovan.infura.io/v3/${process.env.INFURA_KEY}`,
