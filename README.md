@@ -38,6 +38,7 @@ The repository is built using hardhat. So it is recommended to install hardhat g
 1. All contract codes, interfaces and utilites imported in the smart contracts can be found at [/contracts](./contracts)
 2. All chainlink related contracts are found at [/contracts/chainlink](./contracts/chainlink)
 3. All contract interfaces are found at [/contracts/interface](./contracts/interface).
+4. An example implementation is given at [/contracts/example](./contracts/example).
 
 All configuration is done in hardhat.config.js & linting configurations are made in .solhint.json & .prettierrc
 
