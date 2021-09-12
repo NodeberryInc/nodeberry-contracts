@@ -24,13 +24,46 @@ Supports 50+ ERC20 tokens & all stablecoins. Integrate to your smart contracts w
 
 ---
 
-## Getting Started
+## Overview
 
 ### Prerequisites
 
 The repository is built using hardhat. So it is recommended to install hardhat globally through npm or yarn using the following commands. Also the development of these smart contracts are done in npm version v7.21.1 & NodeJs version v16.1.0
 
 `sudo npm i -g hardhat`
+
+### Installation
+
+```console
+$ npm i @nodeberry/solidity-payment-processor
+```
+
+### Usage
+
+Once installed, you can use the contracts in the library by importing them:
+
+```solidity
+pragma solidity ^0.8.7;
+
+import "@nodeberry/solidity-payment-processor/contracts/PaymentProcessor.sol";
+
+contract TestProcessor is PaymentProcessor {
+    // Initialize Your Smart Contracts
+    constructor() PaymentProcessor() {}
+
+    function mockSale(string memory _ticker, uint256 _usd) public virtual {
+        // Process Payments Equivalent in USD inside your smart contracts
+        // usd should be represented in 8 decimals - 1 USD = 100000000
+        payment(_ticker, "", _usd);
+    }
+}
+```
+
+_If you're new to smart contract development, head to [Developing Smart Contracts](https://docs.openzeppelin.com/learn/developing-smart-contracts) to learn about creating a new project and compiling your contracts._
+
+To keep your system secure, you should **always** use the installed code as-is, and neither copy-paste it from online sources, nor modify it yourself. The library is designed so that only the contracts and functions you use are deployed, so you don't need to worry about it needlessly increasing gas costs.
+
+## Learn More
 
 ### Project structure
 

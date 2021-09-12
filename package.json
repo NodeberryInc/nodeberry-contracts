@@ -1,6 +1,6 @@
 {
   "name": "@nodeberry/solidity-payment-processor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Smart Contract Library For Processing ERC20 tokens using a price oracle",
   "scripts": {
     "compile": "npx hardhat compile",
