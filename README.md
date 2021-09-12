@@ -1,7 +1,6 @@
 # Solidity Payment Processor
 
-Smart Contract Library for Processing Stablecoin Payments & ERC20 payments within your smart
-contracts.
+A Library for Processing Stablecoin Payments & ERC20 payments in smart contract development. Built for easier payment processing inside smart contracts.
 
 Supports 50+ ERC20 tokens & all stablecoins. Integrate to your smart contracts with ease.
 
@@ -72,3 +71,11 @@ To run code-coverage:
 ```sh
 $  npm run coverage
 ```
+
+### Contribute
+
+Nodeberry Contracts exists thanks to its contributors. There are many ways you can participate and help build high quality software.
+
+### License
+
+The Contracts are released under the MIT License.
