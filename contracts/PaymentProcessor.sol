@@ -248,8 +248,12 @@ contract PaymentProcessor is IPaymentProcessor, Ownable {
         return contractAddress[bytes(_ticker)];
     }
 
+    function fetchOracle(string memory _ticker) public view returns (address) {
+        return oracleAddress[bytes(_ticker)];
+    }
+
     function fetchOraclePrice(string memory _ticker)
-        private
+        public
         view
         returns (uint256)
     {

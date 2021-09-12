@@ -1,4 +1,4 @@
 module.exports = {
-    skipFiles: ['./chainlink']
+    skipFiles: ['./chainlink','./mock']
   };
   
