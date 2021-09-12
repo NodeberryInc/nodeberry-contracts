@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: ISC
 pragma solidity ^0.8.7;
 
-import "../PaymentProcessor.sol";
+import "@nodeberry/solidity-payment-processor/contracts/PaymentProcessor.sol";
 
 contract TestProcessor is PaymentProcessor {
     // Initialize Your Smart Contracts
